@@ -275,8 +275,12 @@ terminus_v2/
 
 ## Direitos de autor
 
-© 2025 Terminus. Todos os direitos reservados.
+© 2025 Terminus.
 
-Este software é propriedade exclusiva do seu autor.
-Não é permitida a cópia, distribuição, modificação ou uso comercial
-sem autorização expressa e por escrito.
+O Terminus é software livre e de código aberto, distribuído sob a
+Licença Pública Geral GNU v3.0 (GPL-3.0).
+
+Pode copiar, modificar, estudar e distribuir este software, desde que
+as mesmas liberdades sejam mantidas nas versões derivadas.
+
+Consulte o ficheiro `LICENSE` para obter todos os detalhes da licença.
