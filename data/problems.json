@@ -1,0 +1,402 @@
+[
+  {
+    "id": "disco-cheio",
+    "title": "Disco Cheio — Liberando Espaço",
+    "triggers": ["disco cheio", "disk full", "sem espaço", "no space left", "no space left on device", "espaço em disco", "partição cheia"],
+    "tags": ["disco", "espaço", "storage"],
+    "explanation": "Quando o disco está cheio, o sistema pode travar ou programas podem parar de funcionar.\nVeja o que está ocupando espaço e limpe com segurança.",
+    "steps": [
+      {
+        "title": "Verificar uso por partição",
+        "description": "Identifica qual partição está cheia",
+        "command": "df -h"
+      },
+      {
+        "title": "Encontrar as maiores pastas",
+        "description": "Mostra os 20 maiores diretórios no sistema",
+        "command": "sudo du -h / --max-depth=3 2>/dev/null | sort -rh | head -20"
+      },
+      {
+        "title": "Limpar cache do apt",
+        "description": "Pacotes .deb baixados ficam em cache — pode liberar GBs",
+        "command": "sudo apt autoremove && sudo apt clean"
+      },
+      {
+        "title": "Limpar logs antigos do journalctl",
+        "description": "Mantém apenas os últimos 500MB de logs",
+        "command": "sudo journalctl --vacuum-size=500M"
+      },
+      {
+        "title": "Encontrar arquivos grandes (>100MB)",
+        "description": "Busca arquivos grandes em todo o sistema",
+        "command": "sudo find / -type f -size +100M 2>/dev/null | head -20"
+      },
+      {
+        "title": "Limpar pasta /tmp",
+        "description": "Arquivos temporários — geralmente seguros de apagar",
+        "command": "sudo rm -rf /tmp/* && sudo rm -rf /var/tmp/*"
+      }
+    ],
+    "tip": "Instale 'ncdu' para uma interface visual: sudo apt install ncdu && sudo ncdu /",
+    "warning": "Não apague arquivos em /etc, /usr, /lib ou /bin sem saber exatamente o que são."
+  },
+  {
+    "id": "wifi-nao-conecta",
+    "title": "WiFi Não Conecta",
+    "triggers": ["wifi não conecta", "wifi nao conecta", "wifi não funciona", "wifi nao funciona", "sem internet wifi", "rede sem fio", "wireless", "wlan0", "wifi caiu", "wifi sumiu"],
+    "tags": ["rede", "wifi", "internet", "wireless"],
+    "explanation": "Problemas de WiFi no Linux geralmente envolvem driver, serviço NetworkManager ou configuração de rede.",
+    "steps": [
+      {
+        "title": "Verificar se a interface WiFi existe",
+        "description": "Deve aparecer wlan0, wlp2s0 ou similar",
+        "command": "ip link show"
+      },
+      {
+        "title": "Status do NetworkManager",
+        "description": "Verifica se o serviço de rede está ativo",
+        "command": "systemctl status NetworkManager"
+      },
+      {
+        "title": "Reiniciar o NetworkManager",
+        "description": "Resolve a maioria dos problemas de conexão",
+        "command": "sudo systemctl restart NetworkManager"
+      },
+      {
+        "title": "Listar redes disponíveis",
+        "description": "Confirma que a interface está detectando redes",
+        "command": "nmcli device wifi list"
+      },
+      {
+        "title": "Conectar a uma rede específica",
+        "description": "Substitua NOME-DA-REDE e SENHA",
+        "command": "nmcli device wifi connect 'NOME-DA-REDE' password 'SENHA'"
+      },
+      {
+        "title": "Verificar driver WiFi carregado",
+        "description": "Mostra informações sobre a placa de rede",
+        "command": "lspci -k | grep -A3 'Network'"
+      },
+      {
+        "title": "Se driver não carregou — recarregar",
+        "description": "Substitua 'iwlwifi' pelo driver da sua placa",
+        "command": "sudo modprobe -r iwlwifi && sudo modprobe iwlwifi"
+      }
+    ],
+    "tip": "Se o WiFi funciona no Windows mas não no Linux, o driver provavelmente precisa de firmware: sudo apt install linux-firmware",
+    "warning": ""
+  },
+  {
+    "id": "permissao-negada",
+    "title": "Permissão Negada (Permission Denied)",
+    "triggers": ["permission denied", "permissão negada", "acesso negado", "access denied", "não tenho permissão", "nao tenho permissao", "sem permissão"],
+    "tags": ["permissão", "acesso", "sudo"],
+    "explanation": "O Linux protege arquivos e diretórios com permissões.\nEste erro significa que seu usuário não tem direito de acessar ou modificar aquele recurso.",
+    "steps": [
+      {
+        "title": "Ver as permissões do arquivo/pasta",
+        "description": "Mostra dono, grupo e permissões",
+        "command": "ls -la /caminho/do/arquivo"
+      },
+      {
+        "title": "Ver seu usuário e grupos",
+        "description": "Confirma quem você é e seus grupos",
+        "command": "id"
+      },
+      {
+        "title": "Tentar executar com sudo",
+        "description": "sudo roda o comando como root",
+        "command": "sudo comando-que-falhou"
+      },
+      {
+        "title": "Dar permissão de leitura ao seu usuário",
+        "description": "Substitua 'usuario' pelo seu usuário",
+        "command": "sudo chown usuario:usuario /caminho/do/arquivo"
+      },
+      {
+        "title": "Dar permissão de execução a um script",
+        "description": "Necessário antes de rodar scripts .sh",
+        "command": "chmod +x meu_script.sh"
+      }
+    ],
+    "tip": "Evite 'chmod 777' — é um atalho perigoso. Use a menor permissão necessária.",
+    "warning": "Não use sudo em tudo indiscriminadamente. Entenda o que o comando faz antes."
+  },
+  {
+    "id": "servico-parado",
+    "title": "Serviço Parado ou Com Falha",
+    "triggers": ["serviço parou", "servico parou", "service failed", "serviço não inicia", "servico nao inicia", "failed to start", "unit failed", "nginx parou", "apache parou", "mysql parou", "serviço caiu"],
+    "tags": ["serviço", "systemd", "systemctl"],
+    "explanation": "No Linux moderno (systemd), serviços são gerenciados pelo systemctl.\nQuando um serviço falha, você pode ver o status e os logs detalhados.",
+    "steps": [
+      {
+        "title": "Ver status do serviço",
+        "description": "Substitua 'nome-do-servico' (ex: nginx, mysql, ssh)",
+        "command": "sudo systemctl status nome-do-servico"
+      },
+      {
+        "title": "Ver logs de erro do serviço",
+        "description": "-n 50 = últimas 50 linhas",
+        "command": "sudo journalctl -u nome-do-servico -n 50 --no-pager"
+      },
+      {
+        "title": "Tentar iniciar o serviço",
+        "description": "Inicia o serviço manualmente",
+        "command": "sudo systemctl start nome-do-servico"
+      },
+      {
+        "title": "Reiniciar o serviço",
+        "description": "Útil quando o serviço travou",
+        "command": "sudo systemctl restart nome-do-servico"
+      },
+      {
+        "title": "Habilitar na inicialização",
+        "description": "Garante que o serviço inicia com o sistema",
+        "command": "sudo systemctl enable nome-do-servico"
+      },
+      {
+        "title": "Verificar conflitos de porta",
+        "description": "Descobre se outro processo está usando a mesma porta",
+        "command": "sudo ss -tlnp | grep :80"
+      }
+    ],
+    "tip": "Use 'systemctl list-units --failed' para ver todos os serviços com falha de uma vez.",
+    "warning": ""
+  },
+  {
+    "id": "sistema-lento",
+    "title": "Sistema Lento ou Travando",
+    "triggers": ["sistema lento", "pc lento", "lento", "travando", "travado", "slow", "lag", "congelando", "sem memória", "ram cheia", "cpu alta"],
+    "tags": ["performance", "cpu", "memoria", "ram"],
+    "explanation": "Sistema lento geralmente indica alto uso de CPU, memória RAM esgotada ou problema de I/O de disco.",
+    "steps": [
+      {
+        "title": "Ver carga geral do sistema",
+        "description": "load average: 1min 5min 15min (ideal < número de CPUs)",
+        "command": "uptime"
+      },
+      {
+        "title": "Ver processos que mais consomem CPU",
+        "description": "Os primeiros são os mais pesados",
+        "command": "ps aux --sort=-%cpu | head -15"
+      },
+      {
+        "title": "Ver processos que mais consomem memória",
+        "description": "Identifica vazamentos de memória",
+        "command": "ps aux --sort=-%mem | head -15"
+      },
+      {
+        "title": "Ver uso de memória RAM",
+        "description": "-h = formato humano (GB/MB)",
+        "command": "free -h"
+      },
+      {
+        "title": "Ver I/O de disco em tempo real",
+        "description": "Verifica se o disco é o gargalo",
+        "command": "iostat -x 1 3"
+      },
+      {
+        "title": "Monitorar em tempo real (htop)",
+        "description": "Visão completa e interativa do sistema",
+        "command": "htop"
+      },
+      {
+        "title": "Liberar cache de memória (se RAM esgotada)",
+        "description": "Limpa page cache — seguro de fazer",
+        "command": "sudo sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'"
+      }
+    ],
+    "tip": "Se o swap está sendo muito usado (free -h), considere aumentá-lo ou adicionar mais RAM.",
+    "warning": "Não mate processos do sistema aleatoriamente. Identifique o responsável antes de agir."
+  },
+  {
+    "id": "porta-em-uso",
+    "title": "Porta Já em Uso (Address Already in Use)",
+    "triggers": ["porta em uso", "port in use", "address already in use", "bind failed", "porta ocupada", "EADDRINUSE"],
+    "tags": ["rede", "porta", "socket"],
+    "explanation": "Este erro ocorre quando um programa tenta usar uma porta que já está sendo usada por outro processo.",
+    "steps": [
+      {
+        "title": "Descobrir quem está usando a porta",
+        "description": "Substitua 8080 pelo número da sua porta",
+        "command": "sudo ss -tlnp | grep :8080"
+      },
+      {
+        "title": "Alternativa com lsof",
+        "description": "lsof lista processos por arquivo/porta",
+        "command": "sudo lsof -i :8080"
+      },
+      {
+        "title": "Ver o PID do processo",
+        "description": "O PID aparece na coluna após o nome do processo",
+        "command": "sudo fuser 8080/tcp"
+      },
+      {
+        "title": "Encerrar o processo que usa a porta",
+        "description": "Substitua PID pelo número encontrado",
+        "command": "sudo kill PID"
+      },
+      {
+        "title": "Se travar — forçar encerramento",
+        "description": "Use -9 apenas se kill normal não funcionar",
+        "command": "sudo kill -9 PID"
+      }
+    ],
+    "tip": "Para evitar este erro, use uma porta diferente para seu serviço ou pare o serviço que ocupa a porta.",
+    "warning": ""
+  },
+  {
+    "id": "comando-nao-encontrado",
+    "title": "Comando Não Encontrado (command not found)",
+    "triggers": ["command not found", "comando não encontrado", "comando nao encontrado", "not found", "no such file or directory", "is not installed"],
+    "tags": ["instalação", "PATH", "comando"],
+    "explanation": "O shell não encontrou o comando porque ele não está instalado ou não está no PATH.",
+    "steps": [
+      {
+        "title": "Verificar se o programa está instalado",
+        "description": "which mostra o caminho do executável",
+        "command": "which nome-do-comando"
+      },
+      {
+        "title": "Procurar o pacote para instalar",
+        "description": "apt-cache search encontra pacotes pelo nome",
+        "command": "apt-cache search nome-do-programa"
+      },
+      {
+        "title": "Instalar o programa (Debian/Ubuntu)",
+        "description": "Substitua 'pacote' pelo nome encontrado",
+        "command": "sudo apt install pacote"
+      },
+      {
+        "title": "Verificar se está no PATH",
+        "description": "Mostra todos os diretórios no PATH atual",
+        "command": "echo $PATH"
+      },
+      {
+        "title": "Adicionar diretório ao PATH",
+        "description": "Se o programa está instalado mas fora do PATH",
+        "command": "export PATH=$PATH:/diretorio/do/programa"
+      }
+    ],
+    "tip": "Use 'type nome-do-comando' para ver se é um alias, função ou executável.",
+    "warning": ""
+  },
+  {
+    "id": "ssh-falhou",
+    "title": "Conexão SSH Falhou",
+    "triggers": ["ssh failed", "ssh falhou", "ssh não conecta", "ssh nao conecta", "connection refused ssh", "ssh timeout", "host key verification failed", "ssh key", "permission denied publickey"],
+    "tags": ["ssh", "rede", "remoto"],
+    "explanation": "Falhas de SSH podem ter várias causas: serviço parado, firewall, chave incorreta ou host desconhecido.",
+    "steps": [
+      {
+        "title": "Testar conectividade básica",
+        "description": "Verifica se o host está acessível",
+        "command": "ping -c 3 servidor.com"
+      },
+      {
+        "title": "Verificar se porta SSH está aberta",
+        "description": "nc = netcat; verifica se a porta 22 está aberta",
+        "command": "nc -zv servidor.com 22"
+      },
+      {
+        "title": "Conectar com log verbose",
+        "description": "-v mostra detalhes da conexão para diagnóstico",
+        "command": "ssh -v usuario@servidor.com"
+      },
+      {
+        "title": "Se 'Host key verification failed'",
+        "description": "Remove a chave antiga do known_hosts",
+        "command": "ssh-keygen -R servidor.com"
+      },
+      {
+        "title": "Se 'permission denied (publickey)'",
+        "description": "Especifica o arquivo de chave explicitamente",
+        "command": "ssh -i ~/.ssh/id_ed25519 usuario@servidor.com"
+      },
+      {
+        "title": "Verificar serviço SSH no servidor (se tiver acesso)",
+        "description": "O serviço pode ser 'ssh' ou 'sshd'",
+        "command": "sudo systemctl status ssh"
+      }
+    ],
+    "tip": "Use 'ssh-add ~/.ssh/id_ed25519' para adicionar sua chave ao ssh-agent e evitar digitar senha toda vez.",
+    "warning": ""
+  },
+  {
+    "id": "update-falhou",
+    "title": "Atualização de Pacotes Falhou",
+    "triggers": ["update falhou", "upgrade falhou", "apt error", "apt falhou", "erro ao instalar", "dpkg error", "broken packages", "pacotes quebrados", "dependencies", "dependências"],
+    "tags": ["apt", "pacotes", "atualização"],
+    "explanation": "Erros no apt/dpkg geralmente envolvem pacotes corrompidos, repositórios inacessíveis ou dependências quebradas.",
+    "steps": [
+      {
+        "title": "Ver erros detalhados do apt",
+        "description": "Mostra o que está falhando",
+        "command": "sudo apt-get update 2>&1 | grep -i error"
+      },
+      {
+        "title": "Corrigir pacotes com problemas",
+        "description": "Tenta resolver dependências quebradas automaticamente",
+        "command": "sudo apt --fix-broken install"
+      },
+      {
+        "title": "Reconfigura pacotes mal configurados",
+        "description": "dpkg --configure tenta terminar instalações travadas",
+        "command": "sudo dpkg --configure -a"
+      },
+      {
+        "title": "Limpar listas de repositórios",
+        "description": "Remove cache de listas e baixa novamente",
+        "command": "sudo rm -rf /var/lib/apt/lists/* && sudo apt update"
+      },
+      {
+        "title": "Ver e remover repositórios com erro",
+        "description": "Lista todos os repositórios configurados",
+        "command": "cat /etc/apt/sources.list && ls /etc/apt/sources.list.d/"
+      }
+    ],
+    "tip": "Se um repositório PPA está causando erro, remova-o: sudo add-apt-repository --remove ppa:nome/ppa",
+    "warning": "Não force instalações com --force-all — pode deixar o sistema em estado irrecuperável."
+  },
+  {
+    "id": "sem-internet",
+    "title": "Sem Conexão com a Internet",
+    "triggers": ["sem internet", "sem conexão", "sem conexao", "internet caiu", "internet nao funciona", "internet não funciona", "não acessa internet", "nao acessa internet", "offline"],
+    "tags": ["rede", "internet", "dns", "gateway"],
+    "explanation": "Sem internet pode ser problema de hardware, driver, configuração de rede, DNS ou roteador.",
+    "steps": [
+      {
+        "title": "Verificar interfaces de rede",
+        "description": "Confirma se as interfaces estão UP",
+        "command": "ip link show"
+      },
+      {
+        "title": "Testar ping para o gateway",
+        "description": "Se funcionar, o problema é externo (ISP ou DNS)",
+        "command": "ping -c 3 $(ip route | grep default | awk '{print $3}')"
+      },
+      {
+        "title": "Testar com IP (ignorar DNS)",
+        "description": "Se funcionar, o problema é só DNS",
+        "command": "ping -c 3 8.8.8.8"
+      },
+      {
+        "title": "Testar resolução de DNS",
+        "description": "Deve retornar um IP para google.com",
+        "command": "nslookup google.com"
+      },
+      {
+        "title": "Reiniciar o NetworkManager",
+        "description": "Resolve muitos problemas de rede",
+        "command": "sudo systemctl restart NetworkManager && sleep 3 && ping -c 2 8.8.8.8"
+      },
+      {
+        "title": "Forçar obtenção de IP (DHCP)",
+        "description": "Renova o IP do servidor DHCP",
+        "command": "sudo dhclient -r && sudo dhclient"
+      }
+    ],
+    "tip": "Se o ping para 8.8.8.8 funciona mas nslookup falha, troque o DNS: echo 'nameserver 8.8.8.8' | sudo tee /etc/resolv.conf",
+    "warning": ""
+  }
+]

@@ -1,0 +1,42 @@
+cat > .gitignore << 'EOF'
+# ── Chaves e configuração sensível ──────────────────────────────────
+# configuração local (pode conter chaves)
+terminus.conf
+# variáveis de ambiente locais
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+
+# ── Logs e dados de sessão ───────────────────────────────────────────
+logs/*.log
+logs/*.json
+*.log
+
+# ── Ambientes virtuais ───────────────────────────────────────────────
+.venv/
+venv/
+env/
+.env/
+
+# ── Python ──────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Editores ─────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+EOF

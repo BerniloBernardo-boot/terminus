@@ -1,0 +1,422 @@
+[
+  {
+    "id": "permissoes",
+    "title": "Permissões de Arquivo no Linux",
+    "keywords": ["permissão", "permissoes", "chmod", "chown", "rwx", "acesso", "permission"],
+    "overview": "No Linux, todo arquivo tem permissões para 3 grupos: dono (u), grupo (g) e outros (o).\nCada grupo pode ter: leitura (r=4), escrita (w=2), execução (x=1).",
+    "steps": [
+      {
+        "title": "Ver permissões de um arquivo",
+        "description": "O resultado mostra: tipo | dono | grupo | outros (ex: -rwxr-xr--)",
+        "command": "ls -l arquivo.txt"
+      },
+      {
+        "title": "Dar permissão de execução ao dono",
+        "description": "u=dono, +x=adicionar execução",
+        "command": "chmod u+x script.sh"
+      },
+      {
+        "title": "Dar leitura a todos (dono, grupo, outros)",
+        "description": "a=all (todos), r=leitura",
+        "command": "chmod a+r arquivo.txt"
+      },
+      {
+        "title": "Usar notação numérica (octal)",
+        "description": "755 = rwxr-xr-x | 644 = rw-r--r-- | 600 = rw-------",
+        "command": "chmod 755 script.sh"
+      },
+      {
+        "title": "Mudar o dono do arquivo",
+        "description": "Só root pode mudar dono de arquivos",
+        "command": "sudo chown usuario:grupo arquivo.txt"
+      },
+      {
+        "title": "Aplicar recursivamente a uma pasta",
+        "description": "O -R aplica a todos os arquivos dentro da pasta",
+        "command": "chmod -R 755 /var/www/meusite"
+      }
+    ],
+    "tip": "Memorize: 4=r, 2=w, 1=x. Logo: 7=rwx, 6=rw-, 5=r-x, 4=r--",
+    "warning": ""
+  },
+  {
+    "id": "processos",
+    "title": "Gerenciamento de Processos",
+    "keywords": ["processo", "processos", "ps", "kill", "top", "htop", "pid", "background", "foreground"],
+    "overview": "Processos são programas em execução. Cada um tem um PID (Process ID) único.\nVocê pode listar, monitorar e encerrar processos pelo terminal.",
+    "steps": [
+      {
+        "title": "Listar todos os processos",
+        "description": "Mostra PID, usuário, uso de CPU/memória",
+        "command": "ps aux"
+      },
+      {
+        "title": "Monitorar em tempo real",
+        "description": "Pressione 'q' para sair",
+        "command": "top"
+      },
+      {
+        "title": "Monitor mais amigável (instalar htop)",
+        "description": "htop tem interface colorida e navegação por setas",
+        "command": "htop"
+      },
+      {
+        "title": "Encontrar PID por nome",
+        "description": "Retorna o PID do processo com aquele nome",
+        "command": "pgrep firefox"
+      },
+      {
+        "title": "Encerrar processo pelo PID",
+        "description": "Envia sinal SIGTERM (encerramento gentil)",
+        "command": "kill 1234"
+      },
+      {
+        "title": "Forçar encerramento",
+        "description": "SIGKILL — use só se kill normal não funcionar",
+        "command": "kill -9 1234"
+      },
+      {
+        "title": "Encerrar por nome",
+        "description": "Encerra todos os processos com esse nome",
+        "command": "pkill firefox"
+      },
+      {
+        "title": "Rodar processo em background",
+        "description": "O & no final coloca o processo em background",
+        "command": "comando &"
+      }
+    ],
+    "tip": "Use 'kill' antes de 'kill -9'. O -9 não permite que o processo salve dados.",
+    "warning": "Nunca use 'kill -9 1' — isso mataria o processo init e travaria o sistema."
+  },
+  {
+    "id": "disco",
+    "title": "Gerenciamento de Disco e Armazenamento",
+    "keywords": ["disco", "espaço", "armazenamento", "partição", "df", "du", "mount", "disk"],
+    "overview": "Aprenda a verificar espaço em disco, descobrir o que está consumindo espaço e gerenciar sistemas de arquivo.",
+    "steps": [
+      {
+        "title": "Ver espaço total das partições",
+        "description": "df -h usa unidades legíveis (GB, MB)",
+        "command": "df -h"
+      },
+      {
+        "title": "Ver tamanho de uma pasta",
+        "description": "du -sh = sumário em formato humano",
+        "command": "du -sh /var/log"
+      },
+      {
+        "title": "Top 10 maiores pastas",
+        "description": "Identifica quem está consumindo mais espaço",
+        "command": "du -h /home | sort -rh | head -10"
+      },
+      {
+        "title": "Listar partições e discos",
+        "description": "lsblk mostra a árvore de dispositivos",
+        "command": "lsblk"
+      },
+      {
+        "title": "Ver informações de dispositivos",
+        "description": "Mostra UUIDs, labels e tipos de sistema de arquivo",
+        "command": "sudo blkid"
+      },
+      {
+        "title": "Montar um dispositivo",
+        "description": "Substitua /dev/sdb1 pelo seu dispositivo",
+        "command": "sudo mount /dev/sdb1 /mnt/pendrive"
+      },
+      {
+        "title": "Desmontar com segurança",
+        "description": "Sempre desmonte antes de remover o dispositivo",
+        "command": "sudo umount /mnt/pendrive"
+      }
+    ],
+    "tip": "Use 'ncdu' para uma interface visual de uso de disco: sudo apt install ncdu && ncdu /",
+    "warning": ""
+  },
+  {
+    "id": "rede",
+    "title": "Configuração e Diagnóstico de Rede",
+    "keywords": ["rede", "network", "wifi", "internet", "ip", "dns", "ping", "conectividade", "ethernet"],
+    "overview": "Aprenda a diagnosticar e configurar sua rede no Linux.",
+    "steps": [
+      {
+        "title": "Ver interfaces de rede e IPs",
+        "description": "Mostra todas as interfaces (eth0, wlan0, lo...)",
+        "command": "ip addr show"
+      },
+      {
+        "title": "Testar conectividade básica",
+        "description": "Use Ctrl+C para parar",
+        "command": "ping -c 4 8.8.8.8"
+      },
+      {
+        "title": "Testar resolução de DNS",
+        "description": "Verifica se o DNS está funcionando",
+        "command": "nslookup google.com"
+      },
+      {
+        "title": "Ver tabela de rotas",
+        "description": "Mostra o gateway padrão e rotas configuradas",
+        "command": "ip route show"
+      },
+      {
+        "title": "Ver conexões ativas",
+        "description": "ss é o substituto moderno do netstat",
+        "command": "ss -tuln"
+      },
+      {
+        "title": "Listar redes WiFi disponíveis",
+        "description": "Usando o NetworkManager",
+        "command": "nmcli device wifi list"
+      },
+      {
+        "title": "Conectar a uma rede WiFi",
+        "description": "Substitua SSID e SENHA pelos dados da sua rede",
+        "command": "nmcli device wifi connect 'SSID' password 'SENHA'"
+      }
+    ],
+    "tip": "Se o WiFi sumir após atualização: sudo modprobe -r e então modprobe novamente o driver.",
+    "warning": ""
+  },
+  {
+    "id": "pacotes",
+    "title": "Gerenciamento de Pacotes (apt / dnf / pacman)",
+    "keywords": ["pacote", "instalar", "install", "apt", "dnf", "pacman", "update", "upgrade", "remover"],
+    "overview": "Cada distro Linux usa um gerenciador de pacotes diferente.\nOs principais são: apt (Debian/Ubuntu), dnf (Fedora/RHEL), pacman (Arch).",
+    "steps": [
+      {
+        "title": "Atualizar lista de pacotes",
+        "description": "Sincroniza os repositórios (não instala nada ainda)",
+        "command": "sudo apt update"
+      },
+      {
+        "title": "Atualizar todos os pacotes instalados",
+        "description": "Instala as versões mais novas disponíveis",
+        "command": "sudo apt upgrade -y"
+      },
+      {
+        "title": "Instalar um programa",
+        "description": "Substitua 'nome-do-pacote' pelo programa desejado",
+        "command": "sudo apt install nome-do-pacote"
+      },
+      {
+        "title": "Procurar um pacote",
+        "description": "Busca pelo nome na lista de disponíveis",
+        "command": "apt search nome-do-programa"
+      },
+      {
+        "title": "Remover um programa",
+        "description": "remove = desinstala; purge = desinstala + remove configs",
+        "command": "sudo apt remove nome-do-pacote"
+      },
+      {
+        "title": "Limpar pacotes desnecessários",
+        "description": "Remove dependências que não são mais usadas",
+        "command": "sudo apt autoremove"
+      }
+    ],
+    "tip": "Sempre rode 'apt update' antes de 'apt install' para garantir a versão mais recente.",
+    "warning": "Nunca interrompa uma atualização de pacotes no meio — pode deixar o sistema em estado inconsistente."
+  },
+  {
+    "id": "usuarios",
+    "title": "Gestão de Usuários e Grupos",
+    "keywords": ["usuário", "usuario", "user", "grupo", "group", "adduser", "passwd", "sudo", "root"],
+    "overview": "Linux é multiusuário. Aprenda a criar, modificar e gerenciar usuários e grupos.",
+    "steps": [
+      {
+        "title": "Ver usuário atual",
+        "description": "Retorna seu nome de usuário",
+        "command": "whoami"
+      },
+      {
+        "title": "Ver todos os usuários do sistema",
+        "description": "Formato: nome:senha:uid:gid:comentário:home:shell",
+        "command": "cat /etc/passwd"
+      },
+      {
+        "title": "Criar novo usuário",
+        "description": "adduser é mais amigável que useradd",
+        "command": "sudo adduser nome_usuario"
+      },
+      {
+        "title": "Adicionar usuário ao grupo sudo",
+        "description": "Dá poderes de administrador ao usuário",
+        "command": "sudo usermod -aG sudo nome_usuario"
+      },
+      {
+        "title": "Trocar a senha de um usuário",
+        "description": "Sem argumento, troca a senha do usuário atual",
+        "command": "sudo passwd nome_usuario"
+      },
+      {
+        "title": "Mudar para outro usuário",
+        "description": "su = switch user | '-' carrega o ambiente completo",
+        "command": "su - nome_usuario"
+      },
+      {
+        "title": "Remover um usuário",
+        "description": "-r remove também o diretório home",
+        "command": "sudo userdel -r nome_usuario"
+      }
+    ],
+    "tip": "Use 'groups nome_usuario' para ver em quais grupos um usuário está.",
+    "warning": "Tenha cuidado ao adicionar usuários ao grupo sudo — isso dá acesso total ao sistema."
+  },
+  {
+    "id": "ssh",
+    "title": "SSH — Acesso Remoto Seguro",
+    "keywords": ["ssh", "acesso remoto", "remote", "servidor", "chave", "key", "scp", "sftp"],
+    "overview": "SSH (Secure Shell) permite acessar servidores remotamente de forma segura e criptografada.",
+    "steps": [
+      {
+        "title": "Conectar a um servidor",
+        "description": "Substitua usuario e servidor pelo seu caso",
+        "command": "ssh usuario@servidor.com"
+      },
+      {
+        "title": "Conectar em porta diferente",
+        "description": "Padrão é porta 22. -p especifica outra",
+        "command": "ssh -p 2222 usuario@servidor.com"
+      },
+      {
+        "title": "Gerar par de chaves SSH",
+        "description": "Ed25519 é o algoritmo moderno recomendado",
+        "command": "ssh-keygen -t ed25519 -C 'seu_email@exemplo.com'"
+      },
+      {
+        "title": "Copiar chave pública para o servidor",
+        "description": "Após isso, você não precisará de senha para conectar",
+        "command": "ssh-copy-id usuario@servidor.com"
+      },
+      {
+        "title": "Copiar arquivo para servidor",
+        "description": "scp = secure copy (similar ao cp, mas remoto)",
+        "command": "scp arquivo.txt usuario@servidor.com:/home/usuario/"
+      },
+      {
+        "title": "Verificar e iniciar o servidor SSH",
+        "description": "Para receber conexões SSH, o serviço deve estar ativo",
+        "command": "sudo systemctl status ssh"
+      }
+    ],
+    "tip": "Use ~/.ssh/config para criar atalhos: 'Host meuserver\\n  HostName servidor.com\\n  User usuario'",
+    "warning": "Nunca compartilhe sua chave privada (~/.ssh/id_ed25519). Somente a chave pública (.pub) é para compartilhar."
+  },
+  {
+    "id": "cron",
+    "title": "Agendamento de Tarefas com Cron",
+    "keywords": ["cron", "crontab", "agendar", "schedule", "automatizar", "tarefa agendada"],
+    "overview": "O cron permite agendar tarefas para rodar automaticamente em horários definidos.",
+    "steps": [
+      {
+        "title": "Editar tarefas agendadas do usuário atual",
+        "description": "Abre o editor de crontab",
+        "command": "crontab -e"
+      },
+      {
+        "title": "Listar tarefas agendadas",
+        "description": "Mostra o crontab atual sem editar",
+        "command": "crontab -l"
+      },
+      {
+        "title": "Formato de uma entrada cron",
+        "description": "minuto hora dia_mês mês dia_semana comando",
+        "command": "# minuto(0-59) hora(0-23) dia(1-31) mês(1-12) dia_sem(0-7)"
+      },
+      {
+        "title": "Executar script todo dia às 2h",
+        "description": "0 2 * * * = 'às 2:00 todos os dias'",
+        "command": "0 2 * * * /home/usuario/backup.sh"
+      },
+      {
+        "title": "Executar a cada 15 minutos",
+        "description": "*/15 = 'a cada 15'",
+        "command": "*/15 * * * * /home/usuario/check.sh"
+      },
+      {
+        "title": "Ver logs do cron",
+        "description": "Para verificar se as tarefas estão rodando",
+        "command": "grep CRON /var/log/syslog | tail -20"
+      }
+    ],
+    "tip": "Use crontab.guru para gerar expressões cron visualmente.",
+    "warning": "Sempre use caminhos absolutos nos scripts cron — o PATH do cron é limitado."
+  },
+  {
+    "id": "logs",
+    "title": "Leitura e Análise de Logs do Sistema",
+    "keywords": ["log", "logs", "journalctl", "syslog", "erro", "debug", "audit"],
+    "overview": "Os logs do sistema registram tudo que acontece no Linux. Essenciais para diagnóstico.",
+    "steps": [
+      {
+        "title": "Ver logs do sistema (systemd)",
+        "description": "journalctl é o logger do systemd",
+        "command": "journalctl -xe"
+      },
+      {
+        "title": "Logs de um serviço específico",
+        "description": "Substitua 'nginx' pelo serviço desejado",
+        "command": "journalctl -u nginx -f"
+      },
+      {
+        "title": "Ver logs do kernel (boot)",
+        "description": "Últimas mensagens do kernel",
+        "command": "dmesg | tail -30"
+      },
+      {
+        "title": "Monitorar log em tempo real",
+        "description": "-f = follow (acompanhar novas linhas)",
+        "command": "tail -f /var/log/syslog"
+      },
+      {
+        "title": "Buscar erros nos logs",
+        "description": "Filtra apenas linhas contendo 'error'",
+        "command": "grep -i error /var/log/syslog | tail -20"
+      },
+      {
+        "title": "Logs das últimas 2 horas",
+        "description": "journalctl aceita ranges de tempo",
+        "command": "journalctl --since '2 hours ago'"
+      }
+    ],
+    "tip": "Use 'journalctl -p err' para mostrar apenas erros e acima.",
+    "warning": ""
+  },
+  {
+    "id": "variaveis-ambiente",
+    "title": "Variáveis de Ambiente",
+    "keywords": ["variável", "variavel", "environment", "env", "PATH", "export", "bashrc", "profile"],
+    "overview": "Variáveis de ambiente são configurações globais que programas podem ler.\nExemplos: PATH, HOME, USER, LANG.",
+    "steps": [
+      {
+        "title": "Ver todas as variáveis de ambiente",
+        "description": "Lista todas as variáveis atuais",
+        "command": "env"
+      },
+      {
+        "title": "Ver o valor de uma variável",
+        "description": "echo $NOME imprime o valor",
+        "command": "echo $PATH"
+      },
+      {
+        "title": "Criar variável temporária (sessão atual)",
+        "description": "Só existe nesta sessão de terminal",
+        "command": "export MINHA_VAR='valor'"
+      },
+      {
+        "title": "Criar variável permanente",
+        "description": "Adicione ao ~/.bashrc para persistir",
+        "command": "echo 'export MINHA_VAR=valor' >> ~/.bashrc && source ~/.bashrc"
+      },
+      {
+        "title": "Adicionar pasta ao PATH",
+        "description": "Permite executar programas de um diretório customizado",
+        "command": "echo 'export PATH=$PATH:/meu/diretorio' >> ~/.bashrc && source ~/.bashrc"
+      }
+    ],
+    "tip": "Use 'printenv VARIAVEL' para ver o valor de uma variável específica.",
+    "warning": ""
+  }
+]
